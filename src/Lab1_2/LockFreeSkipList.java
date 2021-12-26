@@ -13,20 +13,6 @@ public class LockFreeSkipList<T extends Comparable<? super T>>
     private double p;
     private Node<T> head;
 
-    static class Node<T>
-    {
-        public T data;
-        public AtomicReference<Node<T>> next;
-        public Node<T> down;
-
-        public Node(T data, AtomicReference<Node<T>> next, Node<T> down)
-        {
-            this.data = data;
-            this.next = next;
-            this.down = down;
-        }
-    }
-
     public LockFreeSkipList(int height, double p)
     {
         this.height = height;
@@ -98,7 +84,7 @@ public class LockFreeSkipList<T extends Comparable<? super T>>
         List<Node<T>> prevRight = new ArrayList<>();
         Node<T> currentNode = head;
 
-        int goalHeight = generateHeight();
+        int goalHeight = randomizeHeight();
         int currentLevel = height;
 
         while (currentLevel > 0)
@@ -188,7 +174,7 @@ public class LockFreeSkipList<T extends Comparable<? super T>>
         }
     }
 
-    private int generateHeight()
+    private int randomizeHeight()
     {
         int lvl = 1;
 
