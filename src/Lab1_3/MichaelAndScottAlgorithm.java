@@ -59,7 +59,8 @@ public class MichaelAndScottAlgorithm<T>
         }
     }
 
-    public void Print() {
+    public void Print()
+    {
         Node<T> current = head.get();
 
         while (current != null)

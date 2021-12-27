@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-public class HarrisOrderedList<T extends Comparable<? super T>>
+public class HarrisOrderedList<T extends Comparable<T>>
 {
     private Node<T> head = new Node<>(null, new AtomicReference<>(null));
 
@@ -13,7 +13,7 @@ public class HarrisOrderedList<T extends Comparable<? super T>>
     {
         if (isNull(data))
         {
-            throw new IllegalArgumentException("Argument should not be null");
+            throw new IllegalArgumentException("Argument is null");
         }
 
         Node<T> prevEl = head;
@@ -42,32 +42,32 @@ public class HarrisOrderedList<T extends Comparable<? super T>>
     {
         if (isNull(data))
         {
-            throw new IllegalArgumentException("Argument should not be null");
+            throw new IllegalArgumentException("Argument is null");
         }
 
         Node<T> newEl = new Node<>(data, new AtomicReference<>(null));
-        Node<T> currentEl = head;
+        Node<T> current = head;
 
         while (true)
         {
-            Node<T> nextEl = currentEl.next.get();
+            Node<T> next = current.next.get();
 
-            if (nonNull(nextEl))
+            if (nonNull(next))
             {
-                if (nextEl.data.compareTo(data) >= 0)
+                if (next.data.compareTo(data) >= 0)
                 {
-                    newEl.next = new AtomicReference<>(nextEl);
-                    if (currentEl.next.compareAndSet(nextEl, newEl))
+                    newEl.next = new AtomicReference<>(next);
+                    if (current.next.compareAndSet(next, newEl))
                     {
                         return;
                     }
                 }
                 else
                 {
-                    currentEl = nextEl;
+                    current = next;
                 }
             }
-            else if (currentEl.next.compareAndSet(null, newEl))
+            else if (current.next.compareAndSet(null, newEl))
             {
                 return;
             }
@@ -88,9 +88,11 @@ public class HarrisOrderedList<T extends Comparable<? super T>>
         return false;
     }
 
-    public void nonSafePrint() {
+    public void Print()
+    {
         Node<T> current = head.next.get();
-        while (nonNull(current)) {
+        while (nonNull(current))
+        {
             System.out.println(current.data);
             current = current.next.get();
         }

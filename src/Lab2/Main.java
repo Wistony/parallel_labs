@@ -1,13 +1,16 @@
 package Lab2;
 
+import Lab2.Actor.Library;
+import Lab2.Actor.Reader;
+import Lab2.RequestResponse.Request;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static Lab2.VisitorCommands.REQUEST_BOOK_FOR_LIBRARY;
-import static Lab2.VisitorCommands.RETURN_BOOK;
+import static Lab2.Commands.REQUEST_BOOK_FOR_LIBRARY;
+import static Lab2.Commands.RETURN_BOOK;
 
 public class Main
 {
@@ -59,8 +62,8 @@ public class Main
         public void run()
         {
             String threadName = Thread.currentThread().getName();
-            ActorRef visitor = akkaSystem.actorOf(Visitor.props(library), threadName);
-            visitor.tell(new BookRequest(REQUEST_BOOK_FOR_LIBRARY, BOOK_1), ActorRef.noSender());
+            ActorRef visitor = akkaSystem.actorOf(Reader.props(library), threadName);
+            visitor.tell(new Request(REQUEST_BOOK_FOR_LIBRARY, BOOK_1), ActorRef.noSender());
             try
             {
                 Thread.sleep(5000);
@@ -69,7 +72,7 @@ public class Main
             {
                 e.printStackTrace();
             }
-            visitor.tell(new BookRequest(RETURN_BOOK, BOOK_1), ActorRef.noSender());
+            visitor.tell(new Request(RETURN_BOOK, BOOK_1), ActorRef.noSender());
         }
     }
 }

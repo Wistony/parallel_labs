@@ -7,37 +7,96 @@ import java.util.concurrent.atomic.AtomicReference;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-public class LockFreeSkipList<T extends Comparable<? super T>>
+public class LockFreeSkipList<T extends Comparable<T>>
 {
-    private int height;
+    private int h;
     private double p;
     private Node<T> head;
 
     public LockFreeSkipList(int height, double p)
     {
-        this.height = height;
+        this.h = height;
         this.p = p;
 
-        Node<T> element = new Node<>(null, new AtomicReference<>(null), null);
-        head = element;
+        Node<T> emptyElement = new Node<>(null, new AtomicReference<>(null), null);
+        head = emptyElement;
 
         for (int i = 0; i < height - 1; i++)
         {
-            Node<T> newElementHead = new Node<>(null, new AtomicReference<>(null), null);
-            element.down = newElementHead;
-            element = newElementHead;
+            Node<T> newListHead = new Node<>(null, new AtomicReference<>(null), null);
+            emptyElement.down = newListHead;
+            emptyElement = newListHead;
         }
+    }
+
+    public boolean add(T data)
+    {
+        if (isNull(data))
+        {
+            throw new IllegalArgumentException("Argument is null");
+        }
+
+        List<Node<T>> prev = new ArrayList<>();
+        List<Node<T>> prevRight = new ArrayList<>();
+        Node<T> currentNode = head;
+
+        int goalHeight = randomizeHeight();
+        int currentLevel = h;
+
+        while (currentLevel > 0)
+        {
+            Node<T> rightEl = currentNode.next.get();
+
+            if (currentLevel <= goalHeight)
+            {
+                if (isNull(rightEl) || rightEl.data.compareTo(data) >= 0)
+                {
+                    prev.add(currentNode);
+                    prevRight.add(rightEl);
+                }
+            }
+
+            if (nonNull(rightEl) && rightEl.data.compareTo(data) < 0)
+            {
+                currentNode  = rightEl;
+            }
+            else
+            {
+                currentNode = currentNode.down;
+                currentLevel--;
+            }
+        }
+
+        Node<T> downEl = null;
+        for (int i = prev.size() - 1; i >= 0; i--)
+        {
+            Node<T> newEl = new Node<>(data, new AtomicReference<>(prevRight.get(i)), null);
+
+            if (nonNull(downEl))
+            {
+                newEl.down = downEl;
+            }
+
+            if (!prev.get(i).next.compareAndSet(prevRight.get(i), newEl) && i == prev.size() - 1)
+            {
+                return false;
+            }
+
+            downEl = newEl;
+        }
+
+        return true;
     }
 
     public boolean remove(T data)
     {
         if (isNull(data))
         {
-            throw new IllegalArgumentException("Argument should not be null");
+            throw new IllegalArgumentException("Argument is null");
         }
 
         Node<T> currentNode = head;
-        int currentLevel = height;
+        int currentLevel = h;
         boolean towerUnmarked = true;
 
         while (currentLevel > 0)
@@ -46,7 +105,8 @@ public class LockFreeSkipList<T extends Comparable<? super T>>
             if (nonNull(rightEl) && rightEl.data.compareTo(data) == 0)
             {
                 Node<T> afterRightEl = rightEl.next.get();
-                if (towerUnmarked) {
+                if (towerUnmarked)
+                {
                     Node<T> towerEl = rightEl;
                     while (nonNull(towerEl))
                     {
@@ -71,65 +131,6 @@ public class LockFreeSkipList<T extends Comparable<? super T>>
         }
 
         return !towerUnmarked;
-    }
-
-    public boolean add(T data)
-    {
-        if (isNull(data))
-        {
-            throw new IllegalArgumentException("Argument should not be null");
-        }
-
-        List<Node<T>> prev = new ArrayList<>();
-        List<Node<T>> prevRight = new ArrayList<>();
-        Node<T> currentNode = head;
-
-        int goalHeight = randomizeHeight();
-        int currentLevel = height;
-
-        while (currentLevel > 0)
-        {
-            Node<T> rightEl = currentNode.next.get();
-
-            if (currentLevel <= goalHeight)
-            {
-                if (isNull(rightEl) || rightEl.data.compareTo(data) >= 0)
-                {
-                    prev.add(currentNode );
-                    prevRight.add(rightEl);
-                }
-            }
-
-            if (nonNull(rightEl) && rightEl.data.compareTo(data) < 0)
-            {
-                currentNode  = rightEl;
-            }
-            else
-            {
-                currentNode  = currentNode.down;
-                currentLevel--;
-            }
-        }
-
-        Node<T> downEl = null;
-        for (int i = prev.size() - 1; i >= 0; i--)
-        {
-            Node<T> newEl = new Node<>(data, new AtomicReference<>(prevRight.get(i)), null);
-
-            if (nonNull(downEl))
-            {
-                newEl.down = downEl;
-            }
-
-            if (!prev.get(i).next.compareAndSet(prevRight.get(i), newEl) && i == prev.size() - 1)
-            {
-                return false;
-            }
-
-            downEl = newEl;
-        }
-
-        return true;
     }
 
     public boolean contains(T data)
@@ -176,13 +177,13 @@ public class LockFreeSkipList<T extends Comparable<? super T>>
 
     private int randomizeHeight()
     {
-        int lvl = 1;
+        int level = 1;
 
-        while (lvl < height && Math.random() < p)
+        while (level < h && Math.random() < p)
         {
-            lvl++;
+            level++;
         }
 
-        return lvl;
+        return level;
     }
 }

@@ -1,7 +1,7 @@
 package Lab1_3;
 
-public class Task3 {
-
+public class Task3
+{
     public static void main(String[] args) throws InterruptedException
     {
         MichaelAndScottAlgorithm<String> queue = new MichaelAndScottAlgorithm<>();

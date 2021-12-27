@@ -1,15 +1,14 @@
 package Lab1_1;
 
-import java.util.concurrent.LinkedBlockingQueue;
-
-public class Task1 {
-
-    public static void main(String[] args) throws InterruptedException {
+public class Task1
+{
+    public static void main(String[] args) throws InterruptedException
+    {
         CustomMutex mutex = new CustomMutex();
 
         for (int i = 0; i < 3; i++)
         {
-            new Thread(new Test1(mutex)).start();
+            new Thread(new MutexTest(mutex)).start();
             Thread.sleep(100);
         }
 
@@ -20,11 +19,12 @@ public class Task1 {
         }*/
     }
 
-    static class Test1 implements Runnable {
+    static class MutexTest implements Runnable
+    {
 
         private static CustomMutex mutex;
 
-        public Test1(CustomMutex mutex)
+        public MutexTest(CustomMutex mutex)
         {
             this.mutex = mutex;
         }
@@ -37,13 +37,11 @@ public class Task1 {
                 if(Thread.currentThread().getName().equals("Thread-2"))
                 {
                     mutex.Notify();
-                    System.out.println("HERE");
                     mutex.Unlock();
                 }
                 else
                 {
                     mutex.Wait();
-                    System.out.println(Thread.currentThread().getName());
                     mutex.Notify();
                     mutex.Unlock();
                 }

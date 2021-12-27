@@ -19,7 +19,7 @@ public class Task4 {
         }
 
         System.out.println("Contains: " + list.contains("Thread-9"));
-        list.nonSafePrint();
+        list.Print();
     }
 
     static class ListTest implements Runnable

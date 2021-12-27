@@ -1,5 +1,8 @@
-package Lab2;
+package Lab2.Actor;
 
+import Lab2.Book;
+import Lab2.LibraryBook;
+import Lab2.RequestResponse.*;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
@@ -7,8 +10,7 @@ import akka.japi.pf.ReceiveBuilder;
 
 import java.util.Map;
 
-import static Lab2.LibraryCommands.*;
-import static Lab2.VisitorCommands.*;
+import static Lab2.Commands.*;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
@@ -29,12 +31,12 @@ public class Library extends AbstractActor
     public Receive createReceive()
     {
         return ReceiveBuilder.create()
-                .match(BookRequest.class, this::handleBookRequest)
-                .match(BookResponse.class, this::handleBookResponse)
+                .match(Request.class, this::handleBookRequest)
+                .match(Response.class, this::handleBookResponse)
                 .build();
     }
 
-    private void handleBookRequest(BookRequest request)
+    private void handleBookRequest(Request request)
     {
         ActorRef visitor = getSender();
         String bookName = request.getBookName();
@@ -86,7 +88,7 @@ public class Library extends AbstractActor
         }
     }
 
-    private void handleBookResponse(BookResponse response)
+    private void handleBookResponse(Response response)
     {
         String command = response.getCommand();
         String bookName = response.getBook().getName();
@@ -104,11 +106,11 @@ public class Library extends AbstractActor
 
     private void approveGivingBook(ActorRef visitor, String command, Book book)
     {
-        visitor.tell(new BookResponse(command, book), ActorRef.noSender());
+        visitor.tell(new Response(command, book), ActorRef.noSender());
     }
 
     private void rejectGivingBook(ActorRef visitor)
     {
-        visitor.tell(new BookResponse(REJECT_GIVING_BOOK, null), ActorRef.noSender());
+        visitor.tell(new Response(REJECT_GIVING_BOOK, null), ActorRef.noSender());
     }
 }

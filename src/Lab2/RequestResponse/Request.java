@@ -1,11 +1,11 @@
-package Lab2;
+package Lab2.RequestResponse;
 
-public class BookRequest
+public class Request
 {
     private String command;
     private String bookName;
 
-    public BookRequest(String command, String bookName)
+    public Request(String command, String bookName)
     {
         this.command = command;
         this.bookName = bookName;
