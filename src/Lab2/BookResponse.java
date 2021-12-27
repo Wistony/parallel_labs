@@ -2,7 +2,6 @@ package Lab2;
 
 public class BookResponse
 {
-
     private String command;
     private Book book;
 

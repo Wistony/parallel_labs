@@ -19,15 +19,15 @@ public class Main
     {
         ActorSystem akkaSystem = ActorSystem.create("library-system");
         ActorRef library = akkaSystem.actorOf(Library.props(getBooks()), "library");
-        Thread[] threads = new Thread[1];
+        Thread[] threads = new Thread[2];
 
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 2; i++)
         {
             threads[i] = new Thread(new TestVisitor(akkaSystem, library));
             threads[i].start();
         }
 
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 2; i++)
         {
             threads[i].join();
         }
@@ -63,7 +63,7 @@ public class Main
             visitor.tell(new BookRequest(REQUEST_BOOK_FOR_LIBRARY, BOOK_1), ActorRef.noSender());
             try
             {
-                Thread.sleep(500);
+                Thread.sleep(5000);
             }
             catch (InterruptedException e)
             {

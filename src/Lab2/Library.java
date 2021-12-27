@@ -43,43 +43,45 @@ public class Library extends AbstractActor
             System.out.println("Library: rejected to give book (no book)");
             rejectGivingBook(visitor);
         }
-
-        LibraryBook book = books.get(bookName);
-        switch (request.getCommand())
+        else
         {
-            case REQUEST_BOOK_FOR_LIBRARY:
+            LibraryBook book = books.get(bookName);
+            switch (request.getCommand())
             {
-                if (!book.isAvailableForLibrary())
+                case REQUEST_BOOK_FOR_LIBRARY:
                 {
-                    System.out.println("Library: rejected to give book for library");
-                    rejectGivingBook(visitor);
+                    if (!book.isAvailableForLibrary())
+                    {
+                        System.out.println("Library: rejected to give book for library");
+                        rejectGivingBook(visitor);
+                    }
+                    else
+                    {
+                        System.out.println("Library: approved to give book for library");
+                        book.setAvailable(FALSE);
+                        approveGivingBook(visitor, APPROVE_GIVING_BOOK_FOR_LIBRARY, book);
+                    }
+                    break;
                 }
-                else
+                case REQUEST_BOOK_FOR_HOME:
                 {
-                    System.out.println("Library: approved to give book for library");
-                    book.setAvailable(FALSE);
-                    approveGivingBook(visitor, APPROVE_GIVING_BOOK_FOR_LIBRARY, book);
+                    if (!book.isAvailableForHome())
+                    {
+                        System.out.println("Library: rejected to give book for home");
+                        rejectGivingBook(visitor);
+                    }
+                    else
+                    {
+                        System.out.println("Library: approved to give book for home");
+                        book.setAvailable(FALSE);
+                        approveGivingBook(visitor, APPROVE_GIVING_BOOK_FOR_HOME, book);
+                    }
+                    break;
                 }
-                break;
-            }
-            case REQUEST_BOOK_FOR_HOME:
-            {
-                if (!book.isAvailableForHome())
+                default:
                 {
-                    System.out.println("Library: rejected to give book for home");
-                    rejectGivingBook(visitor);
+                    System.out.println("Library: unknown command");
                 }
-                else
-                {
-                    System.out.println("Library: approved to give book for home");
-                    book.setAvailable(FALSE);
-                    approveGivingBook(visitor, APPROVE_GIVING_BOOK_FOR_HOME, book);
-                }
-                break;
-            }
-            default:
-            {
-                System.out.println("Library: unknown command");
             }
         }
     }

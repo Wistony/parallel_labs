@@ -2,7 +2,6 @@ package Lab2;
 
 public class BookRequest
 {
-
     private String command;
     private String bookName;
 
